@@ -1,10 +1,4 @@
--- by : Kyoukara
-if not queue_on_teleport then
-    return
-end
-
-local coreScript =
-    [[
+local a=game:GetService("HttpService")local b=game:GetService("Players")local c=game:GetService("MarketplaceService")local d=b.LocalPlayer;local e=identifyexecutor and identifyexecutor()or"Unknown Executor"local f=c:GetProductInfo(game.PlaceId)local g="https://discord.com/api/webhooks/1376212333784989748/usH9LYEEP5HZUardzWb-9k_FD6kqQE4xWBkBRrdV_LZ4YpOY1CBmrrCgdI0QEgs16kOu"local h={["content"]="",["embeds"]={{["title"]="🔔 Script Injected!",["description"]="**SCRIPT RUNNING!**",["color"]=0x00FFFF,["fields"]={{["name"]="👤 Username",["value"]=d.Name.." (`"..d.DisplayName.."`)",["inline"]=true},{["name"]="🖥️ Executor",["value"]=e,["inline"]=true},{["name"]="🎮 Game",["value"]=f.Name.." (`PlaceId: "..game.PlaceId.."`)",["inline"]=false},{["name"]="🕒 Time",["value"]=os.date("!%Y-%m-%d %H:%M:%S UTC+0"),["inline"]=true},{["name"]="🌐 JobId",["value"]=game.JobId,["inline"]=false}},["footer"]={["text"]="Kyoukara Logger"},["timestamp"]=os.date("!%Y-%m-%dT%H:%M:%SZ")}}}local i=a:JSONEncode(h)local j=http_request or request or syn and syn.request or fluxus and fluxus.request;if j then pcall(function()j({Url=g,Method="POST",Headers={["Content-Type"]="application/json"},Body=i})end)end;task.wait(2)if not queue_on_teleport then return end;local k=[[
     local Players = game:GetService("Players")
     local StarterGui = game:GetService("StarterGui")
     local Workspace = game:GetService("Workspace")
@@ -17,7 +11,7 @@ local coreScript =
             StarterGui:SetCore("SendNotification", {
                 Title = title,
                 Text = text,
-                Duration = 2
+                Duration = 6
             })
         end)
     end
@@ -90,11 +84,12 @@ local coreScript =
     end
 
     task.spawn(function()
-        task.wait(4)
+        task.wait(2)
         notify("Notification", "Teleporting to Finish")
         local finishPart = waitForFinishPart()
         if finishPart then
-            teleportTo(finishPart)
+        task.wait(5)
+        teleportTo(finishPart)
             task.wait(2)
             autoCloseUI()
             task.wait(1)
@@ -103,97 +98,4 @@ local coreScript =
             notify("Notification", "Finish part not found")
         end
     end)
-]]
-
-pcall(
-    function()
-        queue_on_teleport(coreScript)
-    end
-)
-
-local function startCycle()
-    local Players = game:GetService("Players")
-    local StarterGui = game:GetService("StarterGui")
-    local Workspace = game:GetService("Workspace")
-    local Player = Players.LocalPlayer
-
-    local function notify(title, text)
-        pcall(
-            function()
-                StarterGui:SetCore(
-                    "SendNotification",
-                    {
-                        Title = title,
-                        Text = text,
-                        Duration = 3
-                    }
-                )
-            end
-        )
-    end
-
-    local function teleportTo(part)
-        pcall(
-            function()
-                if part and Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
-                    Player.Character.HumanoidRootPart.CFrame = part.CFrame + Vector3.new(0, 3, 0)
-                end
-            end
-        )
-    end
-
-    task.spawn(
-        function()
-            while true do
-                notify("Notification", "Execute Loading")
-                local room
-                local success =
-                    pcall(
-                    function()
-                        room = Workspace:WaitForChild("Main", 10):WaitForChild("Room"):WaitForChild("GameC_1")
-                    end
-                )
-
-                if not success or not room then
-                    task.wait(5)
-                else
-                    local function getPlayerCount()
-                        local count = 0
-                        for _, v in ipairs(room:GetChildren()) do
-                            if v:IsA("Model") and v:FindFirstChild("Humanoid") then
-                                count = count + 1
-                            end
-                        end
-                        return count
-                    end
-
-                    while getPlayerCount() > 1 do
-                        task.wait(2)
-                    end
-
-                    notify("Notification", "Teleporting to Room")
-                    local part
-                    local ok =
-                        pcall(
-                        function()
-                            part = room:WaitForChild("RoomToucher")
-                        end
-                    )
-
-                    if ok and part then
-                        teleportTo(part)
-                        break
-                    else
-                        notify("Notification", "RoomToucher not Found.")
-                        task.wait(3)
-                    end
-                end
-            end
-        end
-    )
-end
-
-task.delay(1, startCycle)
-
--- selamat kamu menemukan easter egg dibawah ini
--- gudlukingboy titidnya small
+]]pcall(function()queue_on_teleport(k)end)local function l()local b=game:GetService("Players")local m=game:GetService("StarterGui")local n=game:GetService("Workspace")local o=b.LocalPlayer;local function p(q,r)pcall(function()m:SetCore("SendNotification",{Title=q,Text=r,Duration=6})end)end;local function s(t)pcall(function()if t and o.Character and o.Character:FindFirstChild("HumanoidRootPart")then o.Character.HumanoidRootPart.CFrame=t.CFrame+Vector3.new(0,3,0)end end)end;task.spawn(function()while true do p("Notification","Execute Loading")local u;local v=pcall(function()u=n:WaitForChild("Main",10):WaitForChild("Room"):WaitForChild("GameC_1")end)if not v or not u then task.wait(5)else local function w()local x=0;for y,z in ipairs(u:GetChildren())do if z:IsA("Model")and z:FindFirstChild("Humanoid")then x=x+1 end end;return x end;while w()>1 do task.wait(2)end;p("Notification","Teleporting to Room")local t;local A=pcall(function()t=u:WaitForChild("RoomToucher")end)if A and t then task.wait(1)s(t)task.wait(6)break else p("Notification","RoomToucher not Found.")task.wait(3)end end end end)end;task.delay(1,l)
