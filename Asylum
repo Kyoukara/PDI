@@ -1,0 +1,199 @@
+-- by : Kyoukara
+if not queue_on_teleport then
+    return
+end
+
+local coreScript =
+    [[
+    local Players = game:GetService("Players")
+    local StarterGui = game:GetService("StarterGui")
+    local Workspace = game:GetService("Workspace")
+    local VirtualInputManager = game:GetService("VirtualInputManager")
+
+    local Player = Players.LocalPlayer
+
+    local function notify(title, text)
+        pcall(function()
+            StarterGui:SetCore("SendNotification", {
+                Title = title,
+                Text = text,
+                Duration = 2
+            })
+        end)
+    end
+
+    local function teleportTo(part)
+        pcall(function()
+            if part and Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
+                Player.Character.HumanoidRootPart.CFrame = part.CFrame + Vector3.new(0, 3, 0)
+            end
+        end)
+    end
+
+    local function waitForFinishPart()
+        for _ = 1, 30 do
+            local env = Workspace:FindFirstChild("Environment")
+            local model = env and env:FindFirstChild("Finish") and env.Finish:FindFirstChild("Model")
+            local part = model and model:FindFirstChild("Part")
+            if part then return part end
+            task.wait(1)
+        end
+        return nil
+    end
+
+    local function autoCloseUI()
+        local gui = Player:WaitForChild("PlayerGui")
+        for _ = 1, 20 do
+            for _, screen in ipairs(gui:GetChildren()) do
+                if screen:IsA("ScreenGui") then
+                    for _, obj in ipairs(screen:GetDescendants()) do
+                        if obj:IsA("TextButton") and string.lower(obj.Text) == "close" then
+                            pcall(function()
+                                obj:Activate()
+                                obj.MouseButton1Click:Fire()
+                            end)
+                            return true
+                        end
+                    end
+                end
+            end
+            task.wait(0.5)
+        end
+        return false
+    end
+
+    local function forceInteract()
+        local done = false
+
+        for _, v in ipairs(Workspace:GetDescendants()) do
+            if v:IsA("ProximityPrompt") and v.Enabled and (v.MaxActivationDistance or 0) > 0 then
+                pcall(function()
+                    for i = 1, 25 do
+                        fireproximityprompt(v)
+                        task.wait(0.05)
+                    end
+                    done = true
+                end)
+            end
+        end
+
+        for _ = 1, 3 do
+            pcall(function()
+                VirtualInputManager:SendKeyEvent(true, "E", false, game)
+                task.wait(0.1)
+                VirtualInputManager:SendKeyEvent(false, "E", false, game)
+            end)
+            task.wait(0.1)
+        end
+
+        return done
+    end
+
+    task.spawn(function()
+        task.wait(4)
+        notify("Notification", "Teleporting to Finish")
+        local finishPart = waitForFinishPart()
+        if finishPart then
+            teleportTo(finishPart)
+            task.wait(2)
+            autoCloseUI()
+            task.wait(1)
+            forceInteract()
+        else
+            notify("Notification", "Finish part not found")
+        end
+    end)
+]]
+
+pcall(
+    function()
+        queue_on_teleport(coreScript)
+    end
+)
+
+local function startCycle()
+    local Players = game:GetService("Players")
+    local StarterGui = game:GetService("StarterGui")
+    local Workspace = game:GetService("Workspace")
+    local Player = Players.LocalPlayer
+
+    local function notify(title, text)
+        pcall(
+            function()
+                StarterGui:SetCore(
+                    "SendNotification",
+                    {
+                        Title = title,
+                        Text = text,
+                        Duration = 3
+                    }
+                )
+            end
+        )
+    end
+
+    local function teleportTo(part)
+        pcall(
+            function()
+                if part and Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
+                    Player.Character.HumanoidRootPart.CFrame = part.CFrame + Vector3.new(0, 3, 0)
+                end
+            end
+        )
+    end
+
+    task.spawn(
+        function()
+            while true do
+                notify("Notification", "Execute Loading")
+                local room
+                local success =
+                    pcall(
+                    function()
+                        room = Workspace:WaitForChild("Main", 10):WaitForChild("Room"):WaitForChild("GameC_1")
+                    end
+                )
+
+                if not success or not room then
+                    task.wait(5)
+                else
+                    local function getPlayerCount()
+                        local count = 0
+                        for _, v in ipairs(room:GetChildren()) do
+                            if v:IsA("Model") and v:FindFirstChild("Humanoid") then
+                                count = count + 1
+                            end
+                        end
+                        return count
+                    end
+
+                    while getPlayerCount() > 1 do
+                        task.wait(2)
+                    end
+
+                    notify("Notification", "Teleporting to Room")
+                    local part
+                    local ok =
+                        pcall(
+                        function()
+                            part = room:WaitForChild("RoomToucher")
+                        end
+                    )
+
+                    if ok and part then
+                        teleportTo(part)
+                        break
+                    else
+                        notify("Notification", "RoomToucher not Found.")
+                        task.wait(3)
+                    end
+                end
+            end
+        end
+    )
+end
+
+task.delay(1, startCycle)
+
+-- selamat kamu menemukan easter egg dibawah ini
+-- gudlukingboy titidnya small
